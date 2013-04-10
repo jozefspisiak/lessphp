@@ -647,9 +647,6 @@ class lessc {
 					$this->zipSetArgs($mixin->args, $args);
 				}
 
-				$oldParent = $mixin->parent;
-				if ($mixin != $block) $mixin->parent = $block;
-
 				foreach ($this->sortProps($mixin->props) as $subProp) {
 					if ($suffix !== null &&
 						$subProp[0] == "assign" &&
@@ -664,8 +661,6 @@ class lessc {
 
 					$this->compileProp($subProp, $mixin, $out);
 				}
-
-				$mixin->parent = $oldParent;
 
 				if ($haveArgs) $this->popEnv();
 				if ($haveScope) $this->popEnv();
