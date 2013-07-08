@@ -794,11 +794,35 @@ class lessc {
 	}
 
 	/**
+	 * Cleaning path without removing symlinks
+	 */
+	protected function cleanPath($path) {
+	    $result = array();
+	    $pathA = explode(DIRECTORY_SEPARATOR, $path);
+	    if (!$pathA[0])
+	        $result[] = '';
+	    foreach ($pathA AS $key => $dir) {
+	        if ($dir == '..') {
+	            if (end($result) == '..') {
+	                $result[] = '..';
+	            } elseif (!array_pop($result)) {
+	                $result[] = '..';
+	            }
+	        } elseif ($dir && $dir != '.') {
+	            $result[] = $dir;
+	        }
+	    }
+	    if (!end($pathA)) 
+	        $result[] = '';
+	    return implode(DIRECTORY_SEPARATOR, $result);
+	}
+
+	/**
 	 * Change relative paths according to path to root .less file.
 	 */
 	protected function rewriteUrls($url) {
 		$baseImportDir = realpath(isset($this->baseUrlPath) ? $this->baseUrlPath : end($this->importDir));
-		$lastImportDir = realpath(reset($this->importDir));
+		$lastImportDir = $this->cleanPath(reset($this->importDir));
 
 		if ($baseImportDir === $lastImportDir)
 			return $url;
@@ -807,7 +831,7 @@ class lessc {
 		if(strpos($url,'?') !== false)
 			list($url, $arguments) = explode('?', $url);
 
-		$urlPath = realpath($lastImportDir.DIRECTORY_SEPARATOR.$url);
+		$urlPath = $this->cleanPath($lastImportDir.DIRECTORY_SEPARATOR.$url);
 		if ($urlPath === false)
 			return $arguments ? $url.'?'.$arguments : $url;
 
