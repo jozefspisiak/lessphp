@@ -794,7 +794,7 @@ class lessc {
 	}
 
 	/**
-	 * Cleaning path without removing symlinks
+	 * Cleaning path without removing symlinks, strips trailing slash
 	 */
 	protected function cleanPath($path) {
 	    $result = array();
@@ -812,8 +812,6 @@ class lessc {
 	            $result[] = $dir;
 	        }
 	    }
-	    if (!end($pathA)) 
-	        $result[] = '';
 	    return implode(DIRECTORY_SEPARATOR, $result);
 	}
 
@@ -821,8 +819,8 @@ class lessc {
 	 * Change relative paths according to path to root .less file.
 	 */
 	protected function rewriteUrls($url) {
-		$baseImportDir = realpath(isset($this->baseUrlPath) ? $this->baseUrlPath : end($this->importDir));
-		$lastImportDir = $this->cleanPath(reset($this->importDir));
+		$baseImportDir = $this->cleanPath(isset($this->baseUrlPath) ? $this->baseUrlPath : end($this->importDir));
+		$lastImportDir = $this->cleanPath(reset($this->importDir));		
 
 		if ($baseImportDir === $lastImportDir)
 			return $url;
